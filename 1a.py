@@ -41,8 +41,6 @@ def tablaDiferenciasDivididas(tabla, xi, fi):
         while (i < diagonal):
             denominador = (xi[i+paso]-xi[i])
             numerador = tabla[i+1,j-1]-tabla[i,j-1]
-            print(tabla)
-            print(denominador)
             if denominador == 0:
                 xSymbol = sym.Symbol('x')
                 polinomioDerivado = listaPolinomios[-1].diff(xSymbol)
@@ -54,6 +52,8 @@ def tablaDiferenciasDivididas(tabla, xi, fi):
             i = i+1
         diagonal = diagonal - 1
         j = j+1
+
+        #print(tabla)
 
     return tabla
 
@@ -91,27 +91,33 @@ def cortaDeATramos(ptosX, ptosY, listaCortes):
     for corte in listaCortes:
         esteIntervaloX = []
         esteIntervaloY = []
+        print(indice)
         if indice > 0: 
-            esteIntervaloX.append(ptosX[indice - 1])
-            esteIntervaloY.append(ptosY[indice - 1])
-            esteIntervaloX.append(ptosX[indice - 1])
-            esteIntervaloY.append(ptosY[indice - 1])
+            esteIntervaloX.append(ptosX[indice])
+            esteIntervaloY.append(ptosY[indice])
             
-        while corte > ptosX[indice]:
+        while corte >= ptosX[indice]:
             esteIntervaloX.append(ptosX[indice])
             esteIntervaloY.append(ptosY[indice])
             indice += 1
         intervalosX.append(esteIntervaloX)
         intervalosY.append(esteIntervaloY)
 
+        indice -= 1
     esteIntervaloX = []
     esteIntervaloY = []
 
+    indiceAux = 0
+
     while(indice<len(ptosX)):
+        if indiceAux == 0:
+            esteIntervaloX.append(ptosX[indice])
+            esteIntervaloY.append(ptosY[indice])
+            indiceAux += 1
         esteIntervaloX.append(ptosX[indice])
         esteIntervaloY.append(ptosY[indice])
         indice+=1
-
+    
     intervalosX.append(esteIntervaloX)
     intervalosY.append(esteIntervaloY)
     
@@ -121,7 +127,7 @@ def cortaDeATramos(ptosX, ptosY, listaCortes):
 xi = [0.00, 0.40, 0.80, 1.00, 1.15, 1.30, 1.50, 1.70, 1.90, 2.00, 2.10, 2.30, 2.40, 2.50, 2.60, 2.70, 3.00, 3.30, 3.60, 4.00, 4.50, 5.00, 5.50, 6.00]
 fi = [-70.00, -70.00, -69.72, -65.78, -56.94, -48.28, -34.49, -15.21, 10.96, 29.44, 39.64, 14.19, -16.24, -45.10, -65.76, -78.98, -87.38, -84.70, -80.08, -75.12, -71.00, -70.00, -70.00, -70.00]
 
-listaCortes = [1.5, 2.5, 4.5]
+listaCortes = [0.8, 1.3, 1.9, 2.4, 2.6, 3.0, 4.5]
 
 intervalosX, intervalosY = cortaDeATramos(xi, fi, listaCortes)
 
@@ -155,7 +161,7 @@ print(listaPolinomios)
 
 # Gráfica
 plt.title("newton_interpolation")
-plt.plot (xi, fi, 's', label = "valores originales") #El punto azul representa el valor original
+plt.plot (xi, fi, 's') #El punto azul representa el valor original
 xInicial = 0
 xFinal = listaCortes[0]
 for i in range(len(listaPolinomios)):
@@ -164,7 +170,7 @@ for i in range(len(listaPolinomios)):
     y = np.piecewise(x, [(x > 0) & (x <= 1.5), (x >= 1.5) & (x <= 2.5), (x >= 2.5) & (x <= 4.5), (x >= 4.5) & (x <= 6)], [])
     print(y)
     '''
-    x = np.arange(xInicial, xFinal, 0.01)
+    x = np.arange(xInicial, xFinal, 0.001)
     if (i + 1 < len(listaCortes)):
         xFinal = listaCortes[i + 1]
         xInicial = listaCortes[i]
@@ -172,7 +178,7 @@ for i in range(len(listaPolinomios)):
         xFinal = intervalosX[-1][-1] 
         xInicial = listaCortes[-1]
     y = [listaPolinomios[i].evalf(subs={'x':val}) for val in x]
-    plt.plot (x, y, 'r', label = 'valores de interpolación') # Curva de interpolación
+    plt.plot (x, y, 'r') # Curva de interpolación
     plt.xlabel('x')  
     plt.ylabel('y')  
     plt.legend (loc = 4) # Especifique la posición de la leyenda
